@@ -4,6 +4,10 @@
 static bool mSpaceKeyState = false;
 static bool mLastSpaceKeyState = false;
 
+static GUID GUID_GamepadXboxOneWired = {
+	0x02FF045E, 0x0000, 0x0000,{ 0x00, 0x00, 0x50, 0x49, 0x44, 0x56, 0x49, 0x44 }
+};
+
 static GUID GUID_GamepadXbox360WirelessSteam = {
 	0x11FF28DE, 0x28DE, 0x0001,{ 0x00, 0x00, 0x50, 0x49, 0x44, 0x56, 0x49, 0x44 }
 };
@@ -89,7 +93,6 @@ HRESULT STDMETHODCALLTYPE IDirectInputDevice8Hook::GetDeviceState(DWORD p0, LPVO
 		// Cast device state
 		LPDIJOYSTATE state = (LPDIJOYSTATE)p1;
 
-		/*
 		// Log device state (uncomment these lines if you need to capture the button values before remapping them)
 		WCHAR message[2048];
 		wsprintf(message,
@@ -123,7 +126,6 @@ HRESULT STDMETHODCALLTYPE IDirectInputDevice8Hook::GetDeviceState(DWORD p0, LPVO
 		// Log gamepad GUID (uncomment these lines if you need to capture your gamepad GUID)
 		wsprintf(message, L"Gamepad GUID: {%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}\n", m_GUID.Data1, m_GUID.Data2, m_GUID.Data3, m_GUID.Data4[0], m_GUID.Data4[1], m_GUID.Data4[2], m_GUID.Data4[3], m_GUID.Data4[4], m_GUID.Data4[5], m_GUID.Data4[6], m_GUID.Data4[7]);
 		OutputDebugString(message);
-		*/
 
 		// Fix DragonRise controls
 		if (IsEqualGUID(m_GUID, GUID_GamepadDragonRiseTwinShock))
@@ -163,8 +165,8 @@ HRESULT STDMETHODCALLTYPE IDirectInputDevice8Hook::GetDeviceState(DWORD p0, LPVO
 			state->rgbButtons[5] = state->rgbButtons[5] ^ state->rgbButtons[7];
 		}
 
-		// Fix Xbox360 controls (Steam In-Home Streaming and NVidia GameStream both simulate different versions of this controller!)
-		else if (IsEqualGUID(m_GUID, GUID_GamepadXbox360WirelessSteam) || IsEqualGUID(m_GUID, GUID_GamepadNVidiaShieldGameStream))
+		// Fix Xbox360 / XBoxOne controls (Steam In-Home Streaming and NVidia GameStream both simulate different versions of this controller!)
+		else if (IsEqualGUID(m_GUID, GUID_GamepadXbox360WirelessSteam) || IsEqualGUID(m_GUID, GUID_GamepadNVidiaShieldGameStream) ||IsEqualGUID(m_GUID, GUID_GamepadXboxOneWired))
 		{
 			// Swap A and X button presses to match the expected button number
 			state->rgbButtons[0] = state->rgbButtons[0] ^ state->rgbButtons[2];
